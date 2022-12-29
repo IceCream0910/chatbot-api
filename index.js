@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-app.get("/api", (req, res_api) => {
+app.post("/api", (req, res_api) => {
   const { prompt, sessionId } = req.body;
   var data = {
     "request": {
