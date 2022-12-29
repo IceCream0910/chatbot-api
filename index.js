@@ -16,16 +16,15 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-app.get("/:text", (req, res_api) => {
-  var text = req.params.text.toString();
-  console.log(text);
+app.get("/api", (req, res_api) => {
+  const { prompt, sessionId } = req.body;
   var data = {
     "request": {
-      "query": text
+      "query": prompt
     }
   };
   var options = {
-    url: "https://builder.pingpong.us/api/builder/63133aece4b0793ad020a1aa/integration/v0.2/custom/5d234ee2134aef2123",
+    url: "https://builder.pingpong.us/api/builder/63133aece4b0793ad020a1aa/integration/v0.2/custom/" + sessionId,
     method: "POST",
     body: JSON.stringify(data),
     headers: {
