@@ -1,13 +1,6 @@
 const express = require("express");
 var request = require("request");
-var jsdom = require("jsdom");
-const { JSDOM } = jsdom;
-const { window } = new JSDOM();
-const { document } = (new JSDOM('')).window;
 const cors = require('cors');
-global.document = document;
-var $ = jQuery = require('jquery')(window);
-const moment = require("moment");
 const bodyParser = require('body-parser');
 const app = express();
 
@@ -15,7 +8,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-const REST_API_KEY = process.env.KAKAO_REST_API_KEY;
+const REST_API_KEY = 'a1cb5ad868a6adb4d8d59d2454d4b2bc' || process.env.KAKAO_REST_API_KEY;
+
+app.get("/", (req, res_api) => {
+  res_api.send("여기는 선길이의 머릿속입니다");
+});
 
 // pingpong chat
 app.post("/api", (req, res_api) => {
@@ -64,6 +61,37 @@ app.post("/koGPT", async (req, res) => {
 
     var options = {
       url: 'https://api.kakaobrain.com/v1/inference/kogpt/generation',
+      headers: headers,
+      body: JSON.stringify(dataString)
+    };
+
+    request.post(options, function (error, response, body) {
+      console.log('responseCode = ' + response.statusCode);
+      res.send(body);
+    });
+  } else {
+    res.json({ error: '프롬프트를 입력해주세요.' });
+  }
+});
+
+// kakao karlo
+app.post("/karlo", async (req, res) => {
+  const { prompt } = req.body;
+  if (prompt) {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `KakaoAK ${REST_API_KEY}`
+    };
+
+    var dataString = {
+      "prompt": {
+        "text": prompt,
+        "batch_size": 1
+      }
+    };
+
+    var options = {
+      url: 'https://api.kakaobrain.com/v1/inference/karlo/t2i',
       headers: headers,
       body: JSON.stringify(dataString)
     };
