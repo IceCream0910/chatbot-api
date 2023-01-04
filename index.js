@@ -3,12 +3,16 @@ var request = require("request");
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express();
+const cohere = require('cohere-ai');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-const REST_API_KEY = 'a1cb5ad868a6adb4d8d59d2454d4b2bc' || process.env.KAKAO_REST_API_KEY;
+const REST_API_KEY = process.env.KAKAO_REST_API_KEY;
+const COHERE_REST_API_KEY = process.env.COHERE_REST_API_KEY || '5tbKDl6SODtA3jAcwZfITdIVKTDjSkMlYX6L6hES';
+
+cohere.init(COHERE_REST_API_KEY)
 
 app.get("/", (req, res_api) => {
   res_api.send("여기는 선길이의 머릿속입니다");
@@ -40,6 +44,19 @@ app.post("/api", (req, res_api) => {
     }
   });
 });
+
+// kakao kogpt
+app.post("/cohere", async (req, res) => {
+  const { prompt, max_tokens, temperature } = req.body;
+  const generateResponse = await cohere.generate({
+    model: "xlarge",
+    prompt: prompt,
+    max_tokens: max_tokens || 10,
+    temperature: temperature || 1,
+  });
+  res.send(generateResponse);
+});
+
 
 // kakao kogpt
 app.post("/koGPT", async (req, res) => {
@@ -104,6 +121,7 @@ app.post("/karlo", async (req, res) => {
     res.json({ error: '프롬프트를 입력해주세요.' });
   }
 });
+
 
 
 const PORT = process.env.PORT || 3000;
